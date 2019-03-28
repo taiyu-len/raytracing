@@ -31,18 +31,20 @@ void add_sphere(world& w, int i, int j)
 	w.spheres.push_back(sph);
 }
 
-auto make_world() -> world
+auto make_world(int size) -> world
 {
 	auto w = world();
 	// bottom of the world
 	w.materials.emplace_back(new lambertian(vec3(1, 2, 5) / 10));
 	w.spheres.emplace_back(vec3(0, -1000, 0), 1000, w.materials[0].get());
-	for (int i = -11; i < 11; ++i) {
-		for (int j = -11; j < 11; ++j) {
+	for (int i = -5; i < 5; ++i) {
+		for (int j = -5; j < 5; ++j) {
 			add_sphere(w, i, j);
+			if (--size == 0) goto done;
 		}
 	}
+done:
 	w.materials.emplace_back(new metal(vec3(0.8, 0.8, 0.8)));
-	w.spheres.emplace_back(vec3(0, 2, 0), 2, w.materials.back().get());
+	w.spheres.emplace_back(vec3(0, 1, 0), 1, w.materials.back().get());
 	return w;
 }

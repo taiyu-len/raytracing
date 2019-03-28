@@ -15,6 +15,6 @@ struct world {
 	) const -> std::optional<hit_record>;
 };
 
-auto make_world() -> world;
+auto make_world(int size) -> world;
 
 #endif // WORLD_HPP

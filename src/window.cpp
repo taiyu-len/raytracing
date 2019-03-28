@@ -14,7 +14,7 @@ sdl_tuple init_sdl(int width, int height, int scale, const char* title)
 	renderer.SetScale(scale, scale);
 
 	auto texture  = Texture(
-		renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET,
+		renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING,
 		width, height);
 	return {
 		std::move(window),

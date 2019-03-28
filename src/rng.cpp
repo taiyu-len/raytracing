@@ -4,7 +4,7 @@
 auto rng(float min, float max) -> float
 {
 	static auto rd = std::random_device();
-	static auto gen = std::mt19937();
+	static auto gen = std::mt19937(rd());
 	return std::uniform_real_distribution<float>(min, max)(gen);
 }
 

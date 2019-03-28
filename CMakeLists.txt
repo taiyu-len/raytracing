@@ -13,6 +13,7 @@ target_sources(ray_tracer PRIVATE
 	"src/main.cpp"
 	"src/rng.cpp"
 	"src/window.cpp"
+	"src/render.cpp"
 	"src/camera.cpp"
 	"src/color.cpp"
 	"src/world.cpp"
@@ -21,3 +22,5 @@ target_sources(ray_tracer PRIVATE
 )
 set_target_properties(ray_tracer PROPERTIES CXX_STANDARD 17)
 target_link_libraries(ray_tracer PRIVATE SDL2PP)
+target_link_libraries(ray_tracer PRIVATE Threads::Threads)
+
