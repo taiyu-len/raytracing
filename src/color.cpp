@@ -13,7 +13,7 @@ auto bg_color(ray r) -> vec3
 {
 	auto unit_direction = unit_vector(r.direction());
 	auto t = 0.5 * (unit_direction.y() + 1);
-	return (1.0 - t) * vec3(1, 1, 1) + t * vec3(0.5, 0.7, 1.0);
+	return (1.0 - t) * vec3(.2, .2, .2) + t * vec3(0.1, 0.2, 0.4);
 }
 
 auto color(ray r, world const& w) -> vec3

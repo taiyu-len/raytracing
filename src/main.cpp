@@ -20,10 +20,10 @@
 
 int main(int argc, char **argv)
 try {
-	constexpr int width = 1200, height = 800;
+	constexpr int width = 600, height = 400;
 	constexpr float aspect_ratio = float(width) / float(height);
-	constexpr int scale = 1;
-	constexpr int samples = 1;
+	constexpr int scale   = 2;
+	constexpr int samples = 3;
 
 	auto sdl = SDL2pp::SDL(SDL_INIT_VIDEO);
 	auto [window, renderer, texture] = init_sdl(
@@ -39,7 +39,7 @@ try {
 		lookfrom, lookat, up,
 		fov, aspect_ratio, aperture, dist_to_focus);
 
-	auto w = make_world(100);
+	auto w = make_world(200);
 	render(renderer, texture, w, cam, samples);
 
 	// just idle until death

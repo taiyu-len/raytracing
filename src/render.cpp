@@ -45,7 +45,7 @@ void render(
 	std::mutex render_mtx;
 	auto thread_count = std::thread::hardware_concurrency();
 	auto chunk_count = thread_count * 8;
-	auto chunk_size  = size.y / chunk_count;
+	auto chunk_size  = (size.y / chunk_count) + 1;
 	auto chunk = std::atomic<int>(0);
 
 	auto draw_row = [&](std::vector<Uint32>& pixels, int row)
@@ -66,10 +66,11 @@ void render(
 		auto pixels = std::vector<Uint32>(size.x);
 		for (
 			auto my_chunk = chunk++;
-			my_chunk < chunk_size;
+			my_chunk < chunk_count;
 			my_chunk = chunk++) {
 			auto row = my_chunk * chunk_size;
 			auto end = std::min((my_chunk + 1) * chunk_size, (unsigned)size.y);
+			printf("drawing from %d to %d\n", row, end);
 			for (; row < end; ++row) {
 				draw_row(pixels, row);
 			}
