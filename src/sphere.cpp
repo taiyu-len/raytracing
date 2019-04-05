@@ -1,31 +1,32 @@
 #include "sphere.hpp"
-[[nodiscard]]
-static auto make_hitrecord(float t, ray r, sphere s) -> hit_record
-{
-	auto rec = hit_record{};
-	rec.t = t;
-	rec.p = r(rec.t);
-	rec.n = (rec.p - s.center) / s.radius;
-	rec.mat = s.mat;
-	return rec;
-}
 
-auto sphere::hit(ray r, float tmin, float tmax) const
--> std::optional<hit_record>
+void sphere::operator()(
+	ray const* rs, float* ts, hit_record* hrs, size_t count) const
 {
-	auto oc = r.origin() - center;
-	auto a = dot(r.direction(), r.direction());
-	auto b = dot(oc, r.direction());
-	auto c = dot(oc, oc) - radius*radius;
-	auto discriminant = b*b - a*c;
-	if (discriminant > 0) {
-		auto disc_sqrt = sqrt(b*b - a*c);
-		auto temp = -(b + disc_sqrt) / a;
-		if (temp < tmax && temp > tmin)
-			return make_hitrecord(temp, r, *this);
-		temp = (disc_sqrt - b) / a;
-		if (temp < tmax && temp > tmin)
-			return make_hitrecord(temp, r, *this);
+	auto last = rs + count;
+	const auto set_hr = [&](float f) -> bool {
+		if (f < *ts && f > 0.001) {
+			auto p = (*rs)(f);
+			*ts = f;
+			*hrs = hit_record(p, (p - origin) / radius, mat);
+			return true;
+		} else return false;
+	};
+	while (rs != last) {
+		auto oc = rs->origin() - origin;
+		auto a = dot(rs->direction(), rs->direction());
+		auto b = dot(oc, rs->direction());
+		auto c = dot(oc, oc) - radius * radius;
+		auto disc = b*b - a*c;
+		// if we make contact, we check if its closer then previous
+		// hits.
+		if (disc > 0) {
+			auto ds = sqrt(disc);
+			if (!set_hr(-(b + ds) / a))
+				set_hr((ds - b) / a);
+		}
+		++rs;
+		++ts;
+		++hrs;
 	}
-	return {};
 }

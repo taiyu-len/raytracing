@@ -4,14 +4,17 @@
 #include "ray.hpp"
 #include "hit_record.hpp"
 #include "material.hpp"
-#include <optional>
 
-struct sphere {
+struct sphere : hitable {
 	sphere() = default;
-	sphere(vec3 c, float r, material* m):center(c), radius(r), mat(m) {}
-	auto hit(ray r, float tmin, float tmax) const -> std::optional<hit_record>;
+	sphere(vec3 origin, float radius, material* mat)
+	: origin(origin)
+	, radius(radius)
+	, mat(mat) {}
 
-	vec3  center;
+	void operator()(ray const*, float*, hit_record*, size_t) const override;
+
+	vec3  origin;
 	float radius;
 	material* mat;
 };

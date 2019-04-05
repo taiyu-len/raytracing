@@ -1,15 +1,6 @@
 #include "camera.hpp"
 #include "rng.hpp"
 #include <cmath>
-static
-auto random_vec_in_unit_disk() -> vec3
-{
-	auto p = vec3();
-	do {
-		p = 2.0 * vec3(rng(), rng(), 0) - vec3(1,1,0);
-	} while (dot(p, p) >= 1.0);
-	return p;
-}
 
 camera::camera(
 	vec3 lookfrom, vec3 lookat, vec3 vup,
@@ -30,6 +21,7 @@ camera::camera(
 	horizontal = 2*half_width*focus_dist*u;
 	vertical = 2*half_height*focus_dist*v;
 };
+
 auto camera::operator()(float s, float t) const -> ray
 // [[ expects: u >= 0 && u < 1 ]]
 // [[ expects: v >= 0 && v < 1 ]]
@@ -40,4 +32,3 @@ auto camera::operator()(float s, float t) const -> ray
 		origin + offset,
 		lower_left_corner + s*horizontal + t*vertical - origin - offset);
 }
-

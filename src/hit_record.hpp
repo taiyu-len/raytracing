@@ -5,22 +5,24 @@
 #include <optional>
 
 struct material;
+
 struct hit_record {
-	float t;
-	vec3 p;
-	vec3 n;
-	material* mat;
+	hit_record(vec3 p, vec3 n, material* m):p(p), normal(n), mat(m) {};
+	hit_record():mat(nullptr) {};
+
+	vec3 p, normal;
+	material* mat = nullptr;
+	operator bool() const { return mat; }
 };
 
-template<typename I>
-// requires Iterator<I>
-// requires ValueType<I>::hit(ray(), float(), float()) ->
-//   std::optional<hit_record>
-auto hit_test(
-	I first, I last,
-	ray r, float tmin, float tmax,
-	std::optional<hit_record> = std::nullopt
-) -> std::optional<hit_record>;
+struct hitable {
+	virtual
+	void operator()(
+		ray const* first /* in     */,
+		float* t_best    /* in,out */,
+		hit_record* hr   /*    out */,
+		size_t count) const = 0;
+	virtual ~hitable() = default;
+};
 
-#include "hit_record_t.hpp"
 #endif // HIT_RECORD_HPP

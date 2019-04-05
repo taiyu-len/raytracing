@@ -1,27 +1,36 @@
 #include "material.hpp"
 #include "rng.hpp"
 
-auto lambertian::scatter(ray r, hit_record const& record) const
--> std::optional<scatter_result>
-{
-	vec3 target = record.p + record.n + random_vec_in_unit_sphere();
-	return scatter_result{
-		albedo,
-		ray(record.p, target - record.p)
-	};
+bool lambertian::scatter(
+	ray r,
+	hit_record const& record,
+	vec3& attenuation,
+	ray& scattered
+) const {
+	vec3 target = record.p + record.normal + random_vec_in_unit_sphere();
+	attenuation *= albedo;
+	scattered = ray(record.p, target - record.p);
+	return true;
 }
 
-auto metal::scatter(ray r, hit_record const& record) const
--> std::optional<scatter_result>
-{
-	vec3 reflected = reflect(unit_vector(r.direction()), record.n);
-	auto scattered = ray(
-		record.p,
-		reflected + fuzz*random_vec_in_unit_sphere());
-	if (dot(scattered.direction(), record.n) > 0) {
-		return scatter_result{ albedo, scattered };
+bool metal::scatter(
+	ray r,
+	hit_record const& record,
+	vec3& attenuation,
+	ray& scattered
+) const {
+	vec3 reflected = reflect(unit_vector(r.direction()), record.normal);
+	if (fuzz > 0.001) {
+		auto rv = random_vec_in_unit_sphere();
+		scattered = ray(record.p, reflected + fuzz*rv);
 	} else {
-		return {};
+		scattered = ray(record.p, reflected);
+	}
+	if (dot(scattered.direction(), record.normal) > 0) {
+		attenuation *= albedo;
+		return true;
+	} else {
+		return false;
 	}
 }
 
@@ -32,23 +41,28 @@ static auto shlick(float cosine, float ref_idx) -> float
 	return r0 + (1 - r0)*pow(1-cosine, 5);
 }
 
-auto dielectric::scatter(ray r, hit_record const& record) const
--> std::optional<scatter_result>
-{
+bool dielectric::scatter(
+	ray r,
+	hit_record const& record,
+	vec3& attenuation,
+	ray& scatter
+) const {
 	auto outward_normal = vec3();
-	auto attenuation = vec3(1, 1, 1);
 	auto reflect_prob = float();
 	auto ni_over_nt = float();
 	auto cosine = float();
+	const auto drn = dot(r.direction(), record.normal);
 
-	if (dot(r.direction(), record.n) > 0) {
-		outward_normal = -record.n;
+	if (drn > 0) {
+		// inside
+		outward_normal = -record.normal;
 		ni_over_nt = ref_idx;
-		cosine = ref_idx * dot(r.direction(), record.n);
+		cosine = ref_idx * drn;
 	} else {
-		outward_normal = record.n;
+		// outside
+		outward_normal = record.normal;
 		ni_over_nt = 1.0 / ref_idx;
-		cosine = -dot(r.direction(), record.n);
+		cosine = -drn;
 	}
 	cosine /=  r.direction().length();
 
@@ -59,9 +73,10 @@ auto dielectric::scatter(ray r, hit_record const& record) const
 		reflect_prob = 2.0;
 	}
 	if (rng() < reflect_prob) {
-		auto reflected = reflect(r.direction(), record.n);
-		return scatter_result{ attenuation, ray(record.p, reflected) };
+		auto reflected = reflect(r.direction(), record.normal);
+		scatter = ray(record.p, reflected);
 	} else {
-		return scatter_result{ attenuation, ray(record.p, *refracted) };
+		scatter = ray(record.p, *refracted);
 	}
+	return true;
 }

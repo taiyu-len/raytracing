@@ -1,9 +1,5 @@
 #include <cmath>
 
-vec3::vec3(float e0, float e1, float e2)
-: e{e0, e1, e2}
-{}
-
 auto vec3::x() const -> float
 {
 	return (*this)[0];
@@ -36,12 +32,22 @@ auto vec3::b() const -> float
 
 auto vec3::operator[](int i) const -> float
 {
-	return e[i];
+	switch (i) {
+	case 0: return e0;
+	case 1: return e1;
+	case 2: return e2;
+	default: return 0;
+	}
 }
 
 auto vec3::operator[](int i) -> float&
 {
-	return e[i];
+	switch (i) {
+	case 0: return e0;
+	case 1: return e1;
+	case 2: return e2;
+	default: return e2;
+	}
 }
 
 auto vec3::operator+() const -> const vec3&
@@ -51,54 +57,54 @@ auto vec3::operator+() const -> const vec3&
 
 auto vec3::operator-() const -> vec3
 {
-	return vec3(-e[0], -e[1], -e[2]);
+	return vec3{-e0, -e1, -e2};
 }
 
 auto vec3::operator+=(vec3 const& x) -> vec3&
 {
-	e[0] += x[0];
-	e[1] += x[1];
-	e[2] += x[2];
+	e0 += x[0];
+	e1 += x[1];
+	e2 += x[2];
 	return *this;
 }
 
 auto vec3::operator-=(vec3 const& x) -> vec3&
 {
-	e[0] -= x[0];
-	e[1] -= x[1];
-	e[2] -= x[2];
+	e0 -= x[0];
+	e1 -= x[1];
+	e2 -= x[2];
 	return *this;
 }
 
 auto vec3::operator*=(vec3 const& x) -> vec3&
 {
-	e[0] *= x[0];
-	e[1] *= x[1];
-	e[2] *= x[2];
+	e0 *= x[0];
+	e1 *= x[1];
+	e2 *= x[2];
 	return *this;
 }
 
 auto vec3::operator/=(vec3 const& x) -> vec3&
 {
-	e[0] /= x[0];
-	e[1] /= x[1];
-	e[2] /= x[2];
+	e0 /= x[0];
+	e1 /= x[1];
+	e2 /= x[2];
 	return *this;
 }
 
 auto vec3::operator*=(float x) -> vec3&
 {
-	e[0] *= x;
-	e[1] *= x;
-	e[2] *= x;
+	e0 *= x;
+	e1 *= x;
+	e2 *= x;
 	return *this;
 }
 
 auto vec3::operator/=(float x) -> vec3&
 {
-	e[0] /= x;
-	e[1] /= x;
-	e[2] /= x;
+	e0 /= x;
+	e1 /= x;
+	e2 /= x;
 	return *this;
 }
 
@@ -109,7 +115,7 @@ auto vec3::length() const -> float
 
 auto vec3::length_sq() const -> float
 {
-	return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
+	return e0*e0 + e1*e1 + e2*e2;
 }
 
 void vec3::make_unit_vector()
@@ -164,10 +170,11 @@ auto dot(vec3 x, vec3 y) -> float
 
 auto cross(vec3 x, vec3 y) -> vec3
 {
-	return vec3(
+	return vec3{
 		x[1]*y[2] - x[2]*y[1],
 		x[2]*y[0] - x[0]*y[2],
-		x[0]*y[1] - x[1]*y[0]);
+		x[0]*y[1] - x[1]*y[0]
+	};
 }
 
 auto reflect(vec3 v, vec3 n) -> vec3
@@ -187,7 +194,7 @@ auto refract(vec3 v, vec3 n, float ni_over_nt) -> std::optional<vec3>
 
 auto sqrt(vec3 v) -> vec3
 {
-	return vec3(sqrt(v[0]), sqrt(v[1]), sqrt(v[2]));
+	return vec3{sqrt(v[0]), sqrt(v[1]), sqrt(v[2])};
 }
 
 auto unit_vector(vec3 x) -> vec3

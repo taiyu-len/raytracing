@@ -3,9 +3,6 @@
 #include <optional>
 
 struct vec3 {
-	vec3() = default;
-	inline vec3(float e0, float e1, float e2);
-
 	[[nodiscard]] inline auto x() const -> float;
 	[[nodiscard]] inline auto y() const -> float;
 	[[nodiscard]] inline auto z() const -> float;
@@ -33,7 +30,7 @@ struct vec3 {
 
 	inline void make_unit_vector();
 
-	float e[3];
+	float e0, e1, e2;
 };
 
 [[nodiscard]] inline auto operator+(vec3 x, vec3 const& y) -> vec3;
